@@ -16,6 +16,13 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "@prisma/__generated__": ["prisma/__degerated__"],
+      "@prisma/__generated__/*": ["prisma/__degerated__/*"],
+      "utils/*": ["src/lib/common/utils/*"],
+      "@/*": ["src/*"]
+    }
+    
   }
 }
