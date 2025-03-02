@@ -1,14 +1,30 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
+import { IS_DEV_ENV } from 'utils/isDev.util';
 
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { UserModule } from './user/user.module';
 
 @Module({
-  imports: [UserModule, AuthModule, PrismaModule],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      ignoreEnvFile: !IS_DEV_ENV,
+    }),
+    JwtModule.registerAsync({
+      global: true,
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        secret: configService.getOrThrow('JWT_SECRET'),
+        signOptions: { expiresIn: configService.getOrThrow('JWT_ACCESS_TOKEN_EXPIRATION_TIME') },
+      }),
+    }),
+    UserModule,
+    AuthModule,
+    PrismaModule,
+  ],
 })
 export class AppModule {}
