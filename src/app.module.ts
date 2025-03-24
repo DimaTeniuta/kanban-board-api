@@ -5,6 +5,7 @@ import { IS_DEV_ENV } from 'utils/isDev.util';
 
 import { AuthModule } from './auth/auth.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { RedisModule } from './redis/redis.module';
 import { UserModule } from './user/user.module';
 
 @Module({
@@ -25,6 +26,7 @@ import { UserModule } from './user/user.module';
     UserModule,
     AuthModule,
     PrismaModule,
+    RedisModule,
   ],
 })
 export class AppModule {}
