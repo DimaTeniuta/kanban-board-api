@@ -1,19 +1,11 @@
-import {
-  ConflictException,
-  ForbiddenException,
-  Inject,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { ConflictException, ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { compare } from 'bcrypt';
-import { Request } from 'express';
 import { type Redis } from 'ioredis';
 import { extractUserPassword } from 'utils/extractUserPassword.util';
 import { ms, StringValue } from 'utils/ms.util';
 
-import { PrismaService } from '@/prisma/prisma.service';
 import { UserService } from '@/user/user.service';
 
 import { LoginDto } from './dto/login.dto';
@@ -22,14 +14,13 @@ import { RegisterDto } from './dto/register.dto';
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly prismaService: PrismaService,
     private readonly userService: UserService,
     private readonly configService: ConfigService,
     private jwtService: JwtService,
     @Inject('REDIS_CLIENT') private readonly redisClient: Redis,
   ) {}
 
-  public async register(req: Request, dto: RegisterDto) {
+  public async register(dto: RegisterDto) {
     const isExists = await this.userService.findByEmail(dto.email);
 
     if (isExists) {
@@ -68,14 +59,22 @@ export class AuthService {
     await this.redisClient.set(
       `refresh:${user.id}`,
       refreshToken,
-      'EX',
-      this.configService.getOrThrow<string>('JWT_REFRESH_TOKEN_EXPIRATION_TIME'),
+      'PX',
+      ms(this.configService.getOrThrow<string>('JWT_REFRESH_TOKEN_EXPIRATION_TIME') as StringValue),
     );
 
     return {
       user: extractUserPassword(user),
       accessToken,
       refreshToken,
+    };
+  }
+
+  public async logout(urserId: string) {
+    await this.redisClient.del(`refresh:${urserId}`);
+
+    return {
+      message: 'You have successfully logged out.',
     };
   }
 
@@ -98,7 +97,7 @@ export class AuthService {
     await this.redisClient.set(
       `refresh:${dto.userId}`,
       newRefreshToken,
-      'EX',
+      'PX',
       ms(this.configService.getOrThrow<string>('JWT_REFRESH_TOKEN_EXPIRATION_TIME') as StringValue),
     );
 

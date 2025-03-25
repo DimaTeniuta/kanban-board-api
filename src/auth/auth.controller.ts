@@ -1,11 +1,15 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, Req } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post, Req, UseGuards } from '@nestjs/common';
 import { ApiBody, ApiResponse } from '@nestjs/swagger';
 import { Request } from 'express';
 
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
+import { RefreshTokenDto } from './dto/refresh-token';
 import { RegisterDto } from './dto/register.dto';
+import { JwtAuthGuard } from './guards/jwt.guard';
 import { LoginResult } from './results/login.result';
+import { LogoutResult } from './results/logout.result';
+import { RefreshTokenResult } from './results/refresh-token.result';
 import { RegisterResult } from './results/register.result';
 
 @Controller('auth')
@@ -20,8 +24,8 @@ export class AuthController {
     status: HttpStatus.OK,
     type: RegisterResult,
   })
-  public async register(@Req() req: Request, @Body() dto: RegisterDto) {
-    return this.authService.register(req, dto);
+  public async register(@Body() dto: RegisterDto) {
+    return this.authService.register(dto);
   }
 
   @Post('login')
@@ -34,5 +38,29 @@ export class AuthController {
   })
   public async login(@Body() dto: LoginDto) {
     return this.authService.login(dto);
+  }
+
+  @Post('logout')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard)
+  @ApiResponse({
+    description: 'Logout',
+    status: HttpStatus.OK,
+    type: LogoutResult,
+  })
+  public async logout(@Req() req: Request) {
+    return this.authService.logout(req.user.userId);
+  }
+
+  @Post('refresh-token')
+  @HttpCode(HttpStatus.OK)
+  @ApiBody({ type: RefreshTokenDto })
+  @ApiResponse({
+    description: 'Refresh token',
+    status: HttpStatus.OK,
+    type: RefreshTokenResult,
+  })
+  public async refreshToken(@Body() dto: RefreshTokenDto) {
+    return this.authService.refreshToken(dto);
   }
 }
