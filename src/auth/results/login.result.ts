@@ -29,5 +29,5 @@ export class LoginResult {
   readonly user: UserDto;
   @ApiProperty()
   readonly accessToken: string;
-  readonly arefreshToken: string;
+  readonly refreshToken: string;
 }
