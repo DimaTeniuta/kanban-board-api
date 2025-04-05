@@ -5,6 +5,7 @@ import { IS_DEV_ENV } from 'utils/isDev.util';
 
 import { AuthModule } from './auth/auth.module';
 import { BoardsModule } from './boards/boards.module';
+import { ColumnsModule } from './columns/columns.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { RedisModule } from './redis/redis.module';
 import { UserModule } from './user/user.module';
@@ -29,6 +30,7 @@ import { UserModule } from './user/user.module';
     PrismaModule,
     RedisModule,
     BoardsModule,
+    ColumnsModule,
   ],
 })
 export class AppModule {}
