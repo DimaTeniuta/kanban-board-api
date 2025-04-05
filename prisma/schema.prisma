@@ -23,11 +23,70 @@ model User {
   picture  String?
   role     UserRole @default(USER)
 
+  boards    Board[]
+
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("users")
 }
+
+model Board {
+  id        String   @id @default(uuid())
+  title     String
+  description String?
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+
+  columns   Column[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("boards")
+}
+
+model Column {
+  id        String   @id @default(uuid())
+  title     String
+  order     Int
+
+  boardId   String
+  board     Board    @relation(fields: [boardId], references: [id])
+
+  tasks     Task[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("columns")
+}
+
+model Task {
+  id          String    @id @default(uuid())
+  title       String
+  description String?
+  order       Int
+  priority    TaskPriority @default(NONE)
+
+  columnId    String
+  column      Column    @relation(fields: [columnId], references: [id])
+
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  @@map("tasks")
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+  NONE
+}
+
 
 enum UserRole {
   USER

@@ -4,6 +4,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { IS_DEV_ENV } from 'utils/isDev.util';
 
 import { AuthModule } from './auth/auth.module';
+import { BoardsModule } from './boards/boards.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { RedisModule } from './redis/redis.module';
 import { UserModule } from './user/user.module';
@@ -27,6 +28,7 @@ import { UserModule } from './user/user.module';
     AuthModule,
     PrismaModule,
     RedisModule,
+    BoardsModule,
   ],
 })
 export class AppModule {}
