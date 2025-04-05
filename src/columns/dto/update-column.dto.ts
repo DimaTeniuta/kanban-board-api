@@ -10,11 +10,11 @@ export class UpdateColumnDto {
 
   @ApiProperty()
   @IsString({ message: 'columnId must be a string.' })
-  @IsNotEmpty({ message: 'title is required.' })
+  @IsNotEmpty({ message: 'boardId is required.' })
   columnId: string;
 
   @ApiProperty()
   @IsString({ message: 'boardId must be a string.' })
-  @IsNotEmpty({ message: 'title is required.' })
+  @IsNotEmpty({ message: 'boardId is required.' })
   boardId: string;
 }

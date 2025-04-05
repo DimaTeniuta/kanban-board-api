@@ -5,6 +5,7 @@ import {
   Get,
   HttpStatus,
   Param,
+  Patch,
   Post,
   Put,
   Req,
@@ -18,6 +19,7 @@ import { JwtAuthGuard } from '@/auth/guards/jwt.guard';
 import { ColumnsService } from './columns.service';
 import { CreateColumnDto } from './dto/create-column.dto';
 import { UpdateColumnDto } from './dto/update-column.dto';
+import { UpdateColumnOrderDto } from './dto/update-column-order.dto';
 import { ColumnResult, ColumnsResult } from './results/column.result';
 import { DeleteColumnResult } from './results/delete.result';
 
@@ -96,5 +98,18 @@ export class ColumnsController {
     const result = await this.columnsService.delete(boardId, columnId, req.user.userId);
 
     return result;
+  }
+
+  @Patch('order')
+  @UseGuards(JwtAuthGuard)
+  @ApiResponse({
+    description: 'Update column order',
+    status: HttpStatus.OK,
+    type: ColumnsResult,
+  })
+  public async updateOrder(@Req() req: Request, @Body() body: UpdateColumnOrderDto) {
+    const columns = await this.columnsService.updateOrder(body, req.user.userId);
+
+    return { columns };
   }
 }

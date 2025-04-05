@@ -21,6 +21,6 @@ export class BoardResult {
 }
 
 export class BoardsResult {
-  @ApiProperty({ type: BoardResult })
+  @ApiProperty({ type: BoardResult, isArray: true })
   boards: BoardResult[];
 }

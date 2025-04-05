@@ -21,6 +21,6 @@ export class ColumnResult {
 }
 
 export class ColumnsResult {
-  @ApiProperty({ type: ColumnResult })
-  boards: ColumnResult[];
+  @ApiProperty({ type: ColumnResult, isArray: true })
+  columns: ColumnResult[];
 }
