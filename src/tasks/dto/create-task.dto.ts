@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { TaskPriority } from '@prisma/__generated__';
 import { IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
 
-export class CreateBoardDto {
+export class CreateTaskDto {
   @ApiProperty()
   @IsString({ message: 'title must be a string.' })
   @IsNotEmpty({ message: 'title is required.' })
@@ -13,4 +14,15 @@ export class CreateBoardDto {
   @IsString({ message: 'description must be a string.' })
   @MaxLength(300, { message: 'description must be at most 300 characters long.' })
   description: string;
+
+  @ApiProperty()
+  @IsString({ message: 'boardId must be a string.' })
+  boardId: string;
+
+  @ApiProperty()
+  @IsString({ message: 'columnId must be a string.' })
+  columnId: string;
+
+  @ApiProperty({ enum: TaskPriority, enumName: 'TaskPriority' })
+  priority: TaskPriority;
 }
