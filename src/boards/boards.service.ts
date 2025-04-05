@@ -19,6 +19,15 @@ export class BoardsService {
     return boards;
   }
 
+  public async getById(boardId: string, userId: string) {
+    const board = await this.findById(boardId);
+    if (board.userId !== userId) {
+      throw new NotFoundException('Board not found');
+    }
+
+    return board;
+  }
+
   public async create(dto: CreateBoardDto, userId: string) {
     const board = await this.prismaService.board.create({
       data: {
@@ -47,6 +56,23 @@ export class BoardsService {
     });
 
     return updatedBoard;
+  }
+
+  public async delete(boardId: string, userId: string) {
+    const board = await this.findById(boardId);
+    if (board.userId !== userId) {
+      throw new NotFoundException('Board not found');
+    }
+
+    await this.prismaService.board.delete({
+      where: {
+        id: boardId,
+      },
+    });
+
+    return {
+      message: 'Board has been successfully deleted.',
+    };
   }
 
   private async findById(id: string) {

@@ -37,7 +37,7 @@ model Board {
   description String?
 
   userId String
-  user   User   @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   columns Column[]
 
@@ -53,7 +53,7 @@ model Column {
   order Int
 
   boardId String
-  board   Board  @relation(fields: [boardId], references: [id])
+  board   Board  @relation(fields: [boardId], references: [id], onDelete: Cascade)
 
   tasks Task[]
 
@@ -71,7 +71,7 @@ model Task {
   priority    TaskPriority @default(NONE)
 
   columnId String
-  column   Column @relation(fields: [columnId], references: [id])
+  column   Column @relation(fields: [columnId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
