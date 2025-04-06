@@ -29,11 +29,11 @@ export class ColumnsService {
     return column;
   }
 
-  public async create(dto: CreateColumnDto, userId: string) {
-    await this.findBoard(dto.boardId, userId);
+  public async create(dto: CreateColumnDto, boardId: string, userId: string) {
+    await this.findBoard(boardId, userId);
 
     const maxOrderColumn = await this.prismaService.column.findFirst({
-      where: { boardId: dto.boardId },
+      where: { boardId: boardId },
       orderBy: { order: 'desc' },
     });
 
@@ -41,7 +41,8 @@ export class ColumnsService {
 
     const column = await this.prismaService.column.create({
       data: {
-        ...dto,
+        title: dto.title,
+        boardId,
         order,
       },
     });
@@ -49,14 +50,14 @@ export class ColumnsService {
     return column;
   }
 
-  public async update(dto: UpdateColumnDto, userId: string) {
-    await this.findBoard(dto.boardId, userId);
-
-    await this.findColumn(dto.columnId, dto.boardId);
+  public async update(dto: UpdateColumnDto, boardId: string, columnId: string, userId: string) {
+    console.log(222, boardId, columnId);
+    await this.findBoard(boardId, userId);
+    await this.findColumn(columnId, boardId);
 
     const updatedColumn = await this.prismaService.column.update({
       where: {
-        id: dto.columnId,
+        id: columnId,
       },
       data: {
         title: dto.title,
@@ -99,15 +100,15 @@ export class ColumnsService {
     };
   }
 
-  public async updateOrder(dto: UpdateColumnOrderDto, userId: string) {
-    await this.findBoard(dto.boardId, userId);
+  public async updateOrder(dto: UpdateColumnOrderDto, boardId: string, columnId, userId: string) {
+    await this.findBoard(boardId, userId);
 
     const columns = await this.prismaService.column.findMany({
-      where: { boardId: dto.boardId },
+      where: { boardId: boardId },
       orderBy: { order: 'asc' },
     });
 
-    const currentIndex = columns.findIndex((c) => c.id === dto.columnId);
+    const currentIndex = columns.findIndex((c) => c.id === columnId);
     if (currentIndex === -1) {
       throw new NotFoundException('Column not found');
     }
@@ -150,7 +151,7 @@ export class ColumnsService {
     // Update the column itself
     updates.push(
       this.prismaService.column.update({
-        where: { id: dto.columnId },
+        where: { id: columnId },
         data: { order: newOrder },
       }),
     );
@@ -158,7 +159,7 @@ export class ColumnsService {
     await Promise.all(updates);
 
     return this.prismaService.column.findMany({
-      where: { boardId: dto.boardId },
+      where: { boardId: boardId },
       orderBy: { order: 'asc' },
     });
   }

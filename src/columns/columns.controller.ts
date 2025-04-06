@@ -23,14 +23,14 @@ import { UpdateColumnOrderDto } from './dto/update-column-order.dto';
 import { ColumnResult, ColumnsResult } from './results/column.result';
 import { DeleteColumnResult } from './results/delete.result';
 
-@Controller('columns')
+@Controller('boards/:boardId/columns')
 export class ColumnsController {
   constructor(private readonly columnsService: ColumnsService) {}
 
-  @Get(':boardId')
+  @Get()
   @UseGuards(JwtAuthGuard)
   @ApiResponse({
-    description: 'Get all Columns by Board ID',
+    description: 'Get all Columns',
     status: HttpStatus.OK,
     type: ColumnsResult,
   })
@@ -40,10 +40,10 @@ export class ColumnsController {
     return { columns };
   }
 
-  @Get(':boardId/:columnId')
+  @Get(':columnId')
   @UseGuards(JwtAuthGuard)
   @ApiResponse({
-    description: 'Get all Columns by Board ID',
+    description: 'Get one Column',
     status: HttpStatus.OK,
     type: ColumnResult,
   })
@@ -64,26 +64,35 @@ export class ColumnsController {
     status: HttpStatus.OK,
     type: ColumnResult,
   })
-  public async create(@Req() req: Request, @Body() body: CreateColumnDto) {
-    const board = await this.columnsService.create(body, req.user.userId);
+  public async create(
+    @Param('boardId') boardId: string,
+    @Req() req: Request,
+    @Body() body: CreateColumnDto,
+  ) {
+    const column = await this.columnsService.create(body, boardId, req.user.userId);
 
-    return board;
+    return column;
   }
 
-  @Put()
+  @Put(':columnId')
   @UseGuards(JwtAuthGuard)
   @ApiResponse({
     description: 'Update Column',
     status: HttpStatus.OK,
     type: ColumnResult,
   })
-  public async update(@Req() req: Request, @Body() body: UpdateColumnDto) {
-    const column = await this.columnsService.update(body, req.user.userId);
+  public async update(
+    @Param('boardId') boardId: string,
+    @Param('columnId') columnId: string,
+    @Req() req: Request,
+    @Body() body: UpdateColumnDto,
+  ) {
+    const column = await this.columnsService.update(body, boardId, columnId, req.user.userId);
 
     return column;
   }
 
-  @Delete(':boardId/:columnId')
+  @Delete(':columnId')
   @UseGuards(JwtAuthGuard)
   @ApiResponse({
     description: 'Delete Column',
@@ -100,15 +109,20 @@ export class ColumnsController {
     return result;
   }
 
-  @Patch('order')
+  @Patch(':columnId/order')
   @UseGuards(JwtAuthGuard)
   @ApiResponse({
     description: 'Update column order',
     status: HttpStatus.OK,
     type: ColumnsResult,
   })
-  public async updateOrder(@Req() req: Request, @Body() body: UpdateColumnOrderDto) {
-    const columns = await this.columnsService.updateOrder(body, req.user.userId);
+  public async updateOrder(
+    @Param('boardId') boardId: string,
+    @Param('columnId') columnId: string,
+    @Req() req: Request,
+    @Body() body: UpdateColumnOrderDto,
+  ) {
+    const columns = await this.columnsService.updateOrder(body, boardId, columnId, req.user.userId);
 
     return { columns };
   }
