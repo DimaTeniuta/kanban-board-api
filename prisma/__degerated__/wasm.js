@@ -122,8 +122,6 @@ exports.Prisma.UserScalarFieldEnum = {
   email: 'email',
   password: 'password',
   name: 'name',
-  picture: 'picture',
-  role: 'role',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -171,11 +169,6 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
-exports.UserRole = exports.$Enums.UserRole = {
-  USER: 'USER',
-  ADMIN: 'ADMIN'
-};
-
 exports.TaskPriority = exports.$Enums.TaskPriority = {
   LOW: 'LOW',
   MEDIUM: 'MEDIUM',
