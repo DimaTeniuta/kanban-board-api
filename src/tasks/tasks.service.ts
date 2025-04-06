@@ -1,9 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 
 import { PrismaService } from '@/prisma/prisma.service';
 
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
+import { UpdateTaskOrderDto } from './dto/update-task-order.dto';
 
 @Injectable()
 export class TasksService {
@@ -113,6 +114,135 @@ export class TasksService {
     return {
       message: 'Task has been successfully deleted.',
     };
+  }
+
+  public async updateOrder(
+    dto: UpdateTaskOrderDto,
+    boardId: string,
+    columnId: string,
+    taskId: string,
+    userId: string,
+  ) {
+    await this.findBoard(boardId, userId);
+    await this.findColumn(columnId, boardId);
+    const task = await this.findTask(columnId, taskId);
+
+    const isSameColumn = task.columnId === dto.newColumnId;
+
+    if (!isSameColumn) {
+      await this.findColumn(dto.newColumnId, boardId);
+    }
+
+    if (dto.newOrder < 0) {
+      throw new BadRequestException('Invalid order value');
+    }
+
+    const updates: Promise<any>[] = [];
+
+    if (isSameColumn) {
+      const tasks = await this.prismaService.task.findMany({
+        where: { columnId: task.columnId },
+        orderBy: { order: 'asc' },
+      });
+
+      const currentOrder = task.order;
+      const newOrder = dto.newOrder;
+
+      if (newOrder >= tasks.length) {
+        throw new BadRequestException('Invalid order value');
+      }
+
+      if (newOrder > currentOrder) {
+        for (const t of tasks) {
+          if (t.order > currentOrder && t.order <= newOrder) {
+            updates.push(
+              this.prismaService.task.update({
+                where: { id: t.id },
+                data: { order: t.order - 1 },
+              }),
+            );
+          }
+        }
+      } else if (newOrder < currentOrder) {
+        for (const t of tasks) {
+          if (t.order >= newOrder && t.order < currentOrder) {
+            updates.push(
+              this.prismaService.task.update({
+                where: { id: t.id },
+                data: { order: t.order + 1 },
+              }),
+            );
+          }
+        }
+      }
+
+      updates.push(
+        this.prismaService.task.update({
+          where: { id: task.id },
+          data: { order: newOrder },
+        }),
+      );
+    } else {
+      // Moving to another column
+      const targetTasks = await this.prismaService.task.findMany({
+        where: { columnId: dto.newColumnId },
+        orderBy: { order: 'asc' },
+      });
+
+      if (dto.newOrder > targetTasks.length) {
+        throw new BadRequestException('Invalid order value');
+      }
+
+      // Change order of tasks in the new column
+      for (const t of targetTasks) {
+        if (t.order >= dto.newOrder) {
+          updates.push(
+            this.prismaService.task.update({
+              where: { id: t.id },
+              data: { order: t.order + 1 },
+            }),
+          );
+        }
+      }
+
+      // Change order of tasks in the old column
+      const oldTasks = await this.prismaService.task.findMany({
+        where: { columnId: task.columnId },
+        orderBy: { order: 'asc' },
+      });
+
+      for (const t of oldTasks) {
+        if (t.order > task.order) {
+          updates.push(
+            this.prismaService.task.update({
+              where: { id: t.id },
+              data: { order: t.order - 1 },
+            }),
+          );
+        }
+      }
+
+      // Update the task itself
+      updates.push(
+        this.prismaService.task.update({
+          where: { id: task.id },
+          data: {
+            columnId: dto.newColumnId,
+            order: dto.newOrder,
+          },
+        }),
+      );
+    }
+
+    await Promise.all(updates);
+
+    const taskWitnhNewOrder = await this.prismaService.task.findUnique({
+      where: {
+        id: taskId,
+      },
+    });
+
+    return taskWitnhNewOrder;
   }
 
   private async findTask(columnId: string, taskId: string) {

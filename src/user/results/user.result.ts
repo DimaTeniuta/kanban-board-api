@@ -11,9 +11,6 @@ export class UserResult {
   @ApiProperty()
   readonly name: string;
 
-  @ApiProperty()
-  readonly picture?: string | null;
-
   @ApiProperty({ enum: UserRole, enumName: 'UserRole' })
   readonly role: UserRole;
 

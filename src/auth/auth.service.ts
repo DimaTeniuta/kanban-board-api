@@ -27,7 +27,7 @@ export class AuthService {
       throw new ConflictException(`User with ${dto.email} already exists`);
     }
 
-    await this.userService.create(dto.email, dto.password, dto.name, null);
+    await this.userService.create(dto.email, dto.password, dto.name);
 
     return {
       message: 'You have successfully registered.',

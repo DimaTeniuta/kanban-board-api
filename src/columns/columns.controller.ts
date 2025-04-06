@@ -114,7 +114,7 @@ export class ColumnsController {
   @ApiResponse({
     description: 'Update column order',
     status: HttpStatus.OK,
-    type: ColumnsResult,
+    type: ColumnResult,
   })
   public async updateOrder(
     @Param('boardId') boardId: string,
@@ -122,8 +122,8 @@ export class ColumnsController {
     @Req() req: Request,
     @Body() body: UpdateColumnOrderDto,
   ) {
-    const columns = await this.columnsService.updateOrder(body, boardId, columnId, req.user.userId);
+    const column = await this.columnsService.updateOrder(body, boardId, columnId, req.user.userId);
 
-    return { columns };
+    return column;
   }
 }

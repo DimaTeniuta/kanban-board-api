@@ -5,6 +5,7 @@ import {
   Get,
   HttpStatus,
   Param,
+  Patch,
   Post,
   Put,
   Req,
@@ -17,6 +18,7 @@ import { JwtAuthGuard } from '@/auth/guards/jwt.guard';
 
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
+import { UpdateTaskOrderDto } from './dto/update-task-order.dto';
 import { DeleteTaskResult } from './results/delete.result';
 import { TaskResult, TasksResult } from './results/task.result';
 import { TasksService } from './tasks.service';
@@ -28,7 +30,7 @@ export class TasksController {
   @Get()
   @UseGuards(JwtAuthGuard)
   @ApiResponse({
-    description: 'Get all Tasks',
+    description: 'Get all Tasks By Column',
     type: TasksResult,
   })
   public async getAll(
@@ -111,5 +113,30 @@ export class TasksController {
     const result = await this.tasksService.delete(boardId, columnId, taskId, req.user.userId);
 
     return result;
+  }
+
+  @Patch(':taskId/order')
+  @UseGuards(JwtAuthGuard)
+  @ApiResponse({
+    description: 'Update Task order',
+    status: HttpStatus.OK,
+    type: TaskResult,
+  })
+  public async updateOrder(
+    @Param('boardId') boardId: string,
+    @Param('columnId') columnId: string,
+    @Param('taskId') taskId: string,
+    @Req() req: Request,
+    @Body() body: UpdateTaskOrderDto,
+  ) {
+    const tasks = await this.tasksService.updateOrder(
+      body,
+      boardId,
+      columnId,
+      taskId,
+      req.user.userId,
+    );
+
+    return tasks;
   }
 }

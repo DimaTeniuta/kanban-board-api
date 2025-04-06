@@ -11,9 +11,6 @@ class UserDto {
   @ApiProperty()
   name: string;
 
-  @ApiProperty()
-  picture?: string | null;
-
   @ApiProperty({ enum: UserRole, enumName: 'UserRole' })
   role: UserRole;
 

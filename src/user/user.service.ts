@@ -33,7 +33,7 @@ export class UserService {
     return user;
   }
 
-  public async create(email: string, password: string, name: string, picture: string) {
+  public async create(email: string, password: string, name: string) {
     const saltOrRounds = 10;
     const hashedPassword = await hash(password, saltOrRounds);
 
@@ -42,7 +42,6 @@ export class UserService {
         email,
         password: hashedPassword,
         name,
-        picture,
       },
     });
 

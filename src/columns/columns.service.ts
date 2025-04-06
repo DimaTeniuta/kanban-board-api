@@ -51,7 +51,6 @@ export class ColumnsService {
   }
 
   public async update(dto: UpdateColumnDto, boardId: string, columnId: string, userId: string) {
-    console.log(222, boardId, columnId);
     await this.findBoard(boardId, userId);
     await this.findColumn(columnId, boardId);
 
@@ -158,10 +157,11 @@ export class ColumnsService {
 
     await Promise.all(updates);
 
-    return this.prismaService.column.findMany({
-      where: { boardId: boardId },
-      orderBy: { order: 'asc' },
+    const columnWitnNewOrder = await this.prismaService.column.findUnique({
+      where: { id: columnId },
     });
+
+    return columnWitnNewOrder;
   }
 
   private async findBoard(boardId: string, userId: string) {
