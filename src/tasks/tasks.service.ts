@@ -3,6 +3,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
 
 import { CreateTaskDto } from './dto/create-task.dto';
+import { UpdateTaskDto } from './dto/update-task.dto';
 
 @Injectable()
 export class TasksService {
@@ -27,22 +28,17 @@ export class TasksService {
   public async getById(boardId: string, columnId: string, taskId: string, userId: string) {
     await this.findBoard(boardId, userId);
     await this.findColumn(columnId, boardId);
-
-    const task = await this.prismaService.task.findUnique({
-      where: {
-        id: taskId,
-      },
-    });
+    const task = await this.findTask(columnId, taskId);
 
     return task;
   }
 
-  public async create(dto: CreateTaskDto, userId: string) {
-    await this.findBoard(dto.boardId, userId);
-    await this.findColumn(dto.columnId, dto.boardId);
+  public async create(dto: CreateTaskDto, boardId: string, columnId: string, userId: string) {
+    await this.findBoard(boardId, userId);
+    await this.findColumn(columnId, boardId);
 
     const maxOrderTask = await this.prismaService.task.findFirst({
-      where: { columnId: dto.columnId },
+      where: { columnId: columnId },
       orderBy: { order: 'desc' },
     });
 
@@ -52,12 +48,83 @@ export class TasksService {
       data: {
         title: dto.title,
         description: dto.description,
-        columnId: dto.columnId,
+        columnId: columnId,
         priority: dto.priority,
         order,
       },
     });
 
+    return task;
+  }
+
+  public async update(
+    dto: UpdateTaskDto,
+    boardId: string,
+    columnId: string,
+    taskId: string,
+    userId: string,
+  ) {
+    await this.findBoard(boardId, userId);
+    await this.findColumn(columnId, boardId);
+    const task = await this.findTask(columnId, taskId);
+
+    const updatedTask = await this.prismaService.task.update({
+      where: { id: taskId },
+      data: {
+        title: dto.title ?? task.title,
+        description: dto.description ?? task.description,
+        priority: dto.priority ?? task.priority,
+      },
+    });
+
+    return updatedTask;
+  }
+
+  public async delete(boardId: string, columnId: string, taskId: string, userId: string) {
+    await this.findBoard(boardId, userId);
+    await this.findColumn(columnId, boardId);
+    await this.findTask(columnId, taskId);
+
+    await this.prismaService.task.delete({
+      where: {
+        id: taskId,
+        columnId,
+      },
+    });
+
+    const tasks = await this.prismaService.task.findMany({
+      where: { columnId },
+      orderBy: { order: 'asc' },
+    });
+
+    const updates: Promise<any>[] = [];
+
+    for (let i = 0; i < tasks.length; i++) {
+      updates.push(
+        this.prismaService.task.update({
+          where: { id: tasks[i].id },
+          data: { order: i },
+        }),
+      );
+    }
+
+    await Promise.all(updates);
+
+    return {
+      message: 'Task has been successfully deleted.',
+    };
+  }
+
+  private async findTask(columnId: string, taskId: string) {
+    const task = await this.prismaService.task.findUnique({
+      where: {
+        id: taskId,
+        columnId,
+      },
+    });
+    if (!task) {
+      throw new NotFoundException('Task not found');
+    }
     return task;
   }
 

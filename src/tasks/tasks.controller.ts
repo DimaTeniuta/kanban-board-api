@@ -1,21 +1,34 @@
-import { Body, Controller, Get, HttpStatus, Param, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpStatus,
+  Param,
+  Post,
+  Put,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
 import { Request } from 'express';
 
 import { JwtAuthGuard } from '@/auth/guards/jwt.guard';
 
 import { CreateTaskDto } from './dto/create-task.dto';
+import { UpdateTaskDto } from './dto/update-task.dto';
+import { DeleteTaskResult } from './results/delete.result';
 import { TaskResult, TasksResult } from './results/task.result';
 import { TasksService } from './tasks.service';
 
-@Controller('tasks')
+@Controller('boards/:boardId/columns/:columnId/tasks')
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
-  @Get(':boardId/:columnId')
+  @Get()
   @UseGuards(JwtAuthGuard)
   @ApiResponse({
-    description: 'Get all Tasks by Column ID',
+    description: 'Get all Tasks',
     type: TasksResult,
   })
   public async getAll(
@@ -28,10 +41,10 @@ export class TasksController {
     return { tasks };
   }
 
-  @Get(':boardId/:columnId/:taskId')
+  @Get(':taskId')
   @UseGuards(JwtAuthGuard)
   @ApiResponse({
-    description: 'Get all Tasks by Column ID',
+    description: 'Get one Task',
     type: TaskResult,
   })
   public async getById(
@@ -52,9 +65,51 @@ export class TasksController {
     status: HttpStatus.OK,
     type: TaskResult,
   })
-  public async create(@Req() req: Request, @Body() body: CreateTaskDto) {
-    const task = await this.tasksService.create(body, req.user.userId);
+  public async create(
+    @Param('boardId') boardId: string,
+    @Param('columnId') columnId: string,
+    @Req() req: Request,
+    @Body() body: CreateTaskDto,
+  ) {
+    const task = await this.tasksService.create(body, boardId, columnId, req.user.userId);
 
     return task;
+  }
+
+  @Put(':taskId')
+  @UseGuards(JwtAuthGuard)
+  @ApiResponse({
+    description: 'Update Task',
+    status: HttpStatus.OK,
+    type: TaskResult,
+  })
+  public async update(
+    @Param('boardId') boardId: string,
+    @Param('columnId') columnId: string,
+    @Param('taskId') taskId: string,
+    @Req() req: Request,
+    @Body() body: UpdateTaskDto,
+  ) {
+    const task = await this.tasksService.update(body, boardId, columnId, taskId, req.user.userId);
+
+    return task;
+  }
+
+  @Delete(':taskId')
+  @UseGuards(JwtAuthGuard)
+  @ApiResponse({
+    description: 'Delete Task',
+    status: HttpStatus.OK,
+    type: DeleteTaskResult,
+  })
+  public async delete(
+    @Param('boardId') boardId: string,
+    @Param('columnId') columnId: string,
+    @Param('taskId') taskId: string,
+    @Req() req: Request,
+  ) {
+    const result = await this.tasksService.delete(boardId, columnId, taskId, req.user.userId);
+
+    return result;
   }
 }
