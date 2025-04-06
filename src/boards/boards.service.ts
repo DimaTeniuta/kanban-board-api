@@ -20,10 +20,7 @@ export class BoardsService {
   }
 
   public async getById(boardId: string, userId: string) {
-    const board = await this.findById(boardId);
-    if (board.userId !== userId) {
-      throw new NotFoundException('Board not found');
-    }
+    const board = await this.findBoard(boardId, userId);
 
     return board;
   }
@@ -40,10 +37,7 @@ export class BoardsService {
   }
 
   public async update(dto: UpdateBoardDto, boardId: string, userId: string) {
-    const board = await this.findById(boardId);
-    if (board.userId !== userId) {
-      throw new NotFoundException('Board not found');
-    }
+    const board = await this.findBoard(boardId, userId);
 
     const updatedBoard = await this.prismaService.board.update({
       where: {
@@ -59,10 +53,7 @@ export class BoardsService {
   }
 
   public async delete(boardId: string, userId: string) {
-    const board = await this.findById(boardId);
-    if (board.userId !== userId) {
-      throw new NotFoundException('Board not found');
-    }
+    await this.findBoard(boardId, userId);
 
     await this.prismaService.board.delete({
       where: {
@@ -75,10 +66,11 @@ export class BoardsService {
     };
   }
 
-  private async findById(id: string) {
+  public async findBoard(boardId: string, userId: string) {
     const board = await this.prismaService.board.findUnique({
       where: {
-        id,
+        id: boardId,
+        userId,
       },
     });
 

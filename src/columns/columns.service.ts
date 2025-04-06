@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 
+import { BoardsService } from '@/boards/boards.service';
 import { PrismaService } from '@/prisma/prisma.service';
 
 import { CreateColumnDto } from './dto/create-column.dto';
@@ -8,10 +9,13 @@ import { UpdateColumnOrderDto } from './dto/update-column-order.dto';
 
 @Injectable()
 export class ColumnsService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private boardsService: BoardsService,
+  ) {}
 
   public async getAll(boardId: string, userId: string) {
-    await this.findBoard(boardId, userId);
+    await this.boardsService.findBoard(boardId, userId);
 
     const columns = await this.prismaService.column.findMany({
       where: { boardId },
@@ -22,7 +26,7 @@ export class ColumnsService {
   }
 
   public async getById(boardId: string, columnId: string, userId: string) {
-    await this.findBoard(boardId, userId);
+    await this.boardsService.findBoard(boardId, userId);
 
     const column = await this.findColumn(columnId, boardId);
 
@@ -30,7 +34,7 @@ export class ColumnsService {
   }
 
   public async create(dto: CreateColumnDto, boardId: string, userId: string) {
-    await this.findBoard(boardId, userId);
+    await this.boardsService.findBoard(boardId, userId);
 
     const maxOrderColumn = await this.prismaService.column.findFirst({
       where: { boardId: boardId },
@@ -51,7 +55,7 @@ export class ColumnsService {
   }
 
   public async update(dto: UpdateColumnDto, boardId: string, columnId: string, userId: string) {
-    await this.findBoard(boardId, userId);
+    await this.boardsService.findBoard(boardId, userId);
     await this.findColumn(columnId, boardId);
 
     const updatedColumn = await this.prismaService.column.update({
@@ -67,7 +71,7 @@ export class ColumnsService {
   }
 
   public async delete(boardId: string, columnId: string, userId: string) {
-    await this.findBoard(boardId, userId);
+    await this.boardsService.findBoard(boardId, userId);
     await this.findColumn(columnId, boardId);
 
     await this.prismaService.column.delete({
@@ -100,7 +104,7 @@ export class ColumnsService {
   }
 
   public async updateOrder(dto: UpdateColumnOrderDto, boardId: string, columnId, userId: string) {
-    await this.findBoard(boardId, userId);
+    await this.boardsService.findBoard(boardId, userId);
 
     const columns = await this.prismaService.column.findMany({
       where: { boardId: boardId },
@@ -164,22 +168,7 @@ export class ColumnsService {
     return columnWitnNewOrder;
   }
 
-  private async findBoard(boardId: string, userId: string) {
-    const board = await this.prismaService.board.findUnique({
-      where: {
-        id: boardId,
-        userId,
-      },
-    });
-
-    if (!board) {
-      throw new NotFoundException('Board not found');
-    }
-
-    return board;
-  }
-
-  private async findColumn(columnId: string, boardId: string) {
+  public async findColumn(columnId: string, boardId: string) {
     const column = await this.prismaService.column.findUnique({
       where: {
         id: columnId,

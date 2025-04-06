@@ -5,32 +5,32 @@ import { IsPasswordsMatchingConstraint } from '@/lib/common/decorators/isPasswor
 
 export class RegisterDto {
   @ApiProperty()
-  @IsString({ message: 'Name must be a string.' })
-  @IsNotEmpty({ message: 'Name is required.' })
+  @IsString({ message: 'name must be a string.' })
+  @IsNotEmpty({ message: 'name is required.' })
   name: string;
 
   @ApiProperty()
-  @IsString({ message: 'Email must be a string.' })
+  @IsString({ message: 'email must be a string.' })
   @IsEmail({}, { message: 'Invalid email format.' })
-  @IsNotEmpty({ message: 'Email is required.' })
+  @IsNotEmpty({ message: 'email is required.' })
   email: string;
 
   @ApiProperty({ minLength: 6 })
-  @IsString({ message: 'Password must be a string.' })
-  @IsNotEmpty({ message: 'Password is required.' })
+  @IsString({ message: 'password must be a string.' })
+  @IsNotEmpty({ message: 'password is required.' })
   @MinLength(6, {
-    message: 'Password must be at least 6 characters long.',
+    message: 'password must be at least 6 characters long.',
   })
   password: string;
 
   @ApiProperty({ minLength: 6 })
-  @IsString({ message: 'Password confirmation must be a string.' })
-  @IsNotEmpty({ message: 'Password confirmation cannot be empty.' })
+  @IsString({ message: 'password confirmation must be a string.' })
+  @IsNotEmpty({ message: 'password confirmation cannot be empty.' })
   @MinLength(6, {
-    message: 'Password confirmation must be at least 6 characters long.',
+    message: 'password confirmation must be at least 6 characters long.',
   })
   @Validate(IsPasswordsMatchingConstraint, {
-    message: 'Passwords do not match.',
+    message: 'password do not match.',
   })
   passwordRepeat: string;
 }

@@ -13,7 +13,7 @@ export class IsPasswordsMatchingConstraint implements ValidatorConstraintInterfa
     return obj.password === passwordRepeat;
   }
 
-  public defaultMessage(validationArguments?: ValidationArguments) {
+  public defaultMessage(_?: ValidationArguments) {
     return 'Passwords dont match';
   }
 }

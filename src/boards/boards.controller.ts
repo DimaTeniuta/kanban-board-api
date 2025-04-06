@@ -28,7 +28,7 @@ export class BoardsController {
   @Get()
   @UseGuards(JwtAuthGuard)
   @ApiResponse({
-    description: 'Get All User Boards',
+    description: 'Get All Boards',
     type: BoardsResult,
   })
   public async getAll(@Req() req: Request) {

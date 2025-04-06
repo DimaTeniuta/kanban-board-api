@@ -1,5 +1,7 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 
+import { BoardsService } from '@/boards/boards.service';
+import { ColumnsService } from '@/columns/columns.service';
 import { PrismaService } from '@/prisma/prisma.service';
 
 import { CreateTaskDto } from './dto/create-task.dto';
@@ -8,11 +10,15 @@ import { UpdateTaskOrderDto } from './dto/update-task-order.dto';
 
 @Injectable()
 export class TasksService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private boardsService: BoardsService,
+    private columnsService: ColumnsService,
+  ) {}
 
   public async getAll(boardId: string, columnId: string, userId: string) {
-    await this.findBoard(boardId, userId);
-    await this.findColumn(columnId, boardId);
+    await this.boardsService.findBoard(boardId, userId);
+    await this.columnsService.findColumn(columnId, boardId);
 
     const tasks = await this.prismaService.task.findMany({
       where: {
@@ -27,16 +33,16 @@ export class TasksService {
   }
 
   public async getById(boardId: string, columnId: string, taskId: string, userId: string) {
-    await this.findBoard(boardId, userId);
-    await this.findColumn(columnId, boardId);
+    await this.boardsService.findBoard(boardId, userId);
+    await this.columnsService.findColumn(columnId, boardId);
     const task = await this.findTask(columnId, taskId);
 
     return task;
   }
 
   public async create(dto: CreateTaskDto, boardId: string, columnId: string, userId: string) {
-    await this.findBoard(boardId, userId);
-    await this.findColumn(columnId, boardId);
+    await this.boardsService.findBoard(boardId, userId);
+    await this.columnsService.findColumn(columnId, boardId);
 
     const maxOrderTask = await this.prismaService.task.findFirst({
       where: { columnId: columnId },
@@ -65,8 +71,8 @@ export class TasksService {
     taskId: string,
     userId: string,
   ) {
-    await this.findBoard(boardId, userId);
-    await this.findColumn(columnId, boardId);
+    await this.boardsService.findBoard(boardId, userId);
+    await this.columnsService.findColumn(columnId, boardId);
     const task = await this.findTask(columnId, taskId);
 
     const updatedTask = await this.prismaService.task.update({
@@ -82,8 +88,8 @@ export class TasksService {
   }
 
   public async delete(boardId: string, columnId: string, taskId: string, userId: string) {
-    await this.findBoard(boardId, userId);
-    await this.findColumn(columnId, boardId);
+    await this.boardsService.findBoard(boardId, userId);
+    await this.columnsService.findColumn(columnId, boardId);
     await this.findTask(columnId, taskId);
 
     await this.prismaService.task.delete({
@@ -123,14 +129,14 @@ export class TasksService {
     taskId: string,
     userId: string,
   ) {
-    await this.findBoard(boardId, userId);
-    await this.findColumn(columnId, boardId);
+    await this.boardsService.findBoard(boardId, userId);
+    await this.columnsService.findColumn(columnId, boardId);
     const task = await this.findTask(columnId, taskId);
 
     const isSameColumn = task.columnId === dto.newColumnId;
 
     if (!isSameColumn) {
-      await this.findColumn(dto.newColumnId, boardId);
+      await this.columnsService.findColumn(dto.newColumnId, boardId);
     }
 
     if (dto.newOrder < 0) {
@@ -256,35 +262,5 @@ export class TasksService {
       throw new NotFoundException('Task not found');
     }
     return task;
-  }
-
-  private async findBoard(boardId: string, userId: string) {
-    const board = await this.prismaService.board.findUnique({
-      where: {
-        id: boardId,
-        userId,
-      },
-    });
-
-    if (!board) {
-      throw new NotFoundException('Board not found');
-    }
-
-    return board;
-  }
-
-  private async findColumn(columnId: string, boardId: string) {
-    const column = await this.prismaService.column.findUnique({
-      where: {
-        id: columnId,
-        boardId,
-      },
-    });
-
-    if (!column) {
-      throw new NotFoundException('Column not found');
-    }
-
-    return column;
   }
 }

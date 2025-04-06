@@ -60,7 +60,7 @@ export class AuthController {
     status: HttpStatus.OK,
     type: RefreshTokenResult,
   })
-  public async refreshToken(@Body() dto: RefreshTokenDto) {
-    return this.authService.refreshToken(dto);
+  public async refreshToken(@Body() body: RefreshTokenDto) {
+    return this.authService.refreshToken(body);
   }
 }
