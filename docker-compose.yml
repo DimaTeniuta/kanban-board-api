@@ -1,7 +1,26 @@
 version: '3.7'
 
 services:
-  db:
+   app:
+    container_name: kanban
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '${APP_PORT}:${APP_PORT}'
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      - postgres
+      - redis
+    restart: always
+    env_file:
+      - .env
+    networks:
+      - backend
+
+   postgres:
     container_name: postgres
     image: postgres:15.2
     environment:
@@ -16,7 +35,7 @@ services:
       - backend
     restart: always
 
-  redis:
+   redis:
     container_name: redis
     image: redis:5.0
     ports:

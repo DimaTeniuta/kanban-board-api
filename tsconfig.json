@@ -18,8 +18,8 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@prisma/__generated__": ["prisma/__degerated__"],
-      "@prisma/__generated__/*": ["prisma/__degerated__/*"],
+      "@prisma/__generated__": ["prisma/__generated__"],
+      "@prisma/__generated__/*": ["prisma/__generated__/*"],
       "utils/*": ["src/lib/common/utils/*"],
       "@/*": ["src/*"]
     }
