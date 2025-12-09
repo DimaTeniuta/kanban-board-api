@@ -8,6 +8,10 @@ services:
       dockerfile: Dockerfile
     ports:
       - '${APP_PORT}:${APP_PORT}'
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/prisma/__generated__
     depends_on:
       - postgres
       - redis
@@ -16,6 +20,7 @@ services:
       - .env
     networks:
       - backend
+    command: yarn start:dev
 
    postgres:
     container_name: postgres
@@ -50,3 +55,4 @@ volumes:
 
 networks:
   backend:
+

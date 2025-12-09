@@ -25,7 +25,8 @@ cp .env.example .env
 
 3. Start App
 ```bash
-docker compose up -d
+yarn install
+yarn docker:compose:prod / yarn docker:compose:dev
 ```
 Your backend will be available at `http://localhost:4000`.
 
