@@ -7,7 +7,6 @@ import {
   Param,
   Patch,
   Post,
-  Put,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -78,7 +77,7 @@ export class TasksController {
     return task;
   }
 
-  @Put(':taskId')
+  @Patch(':taskId')
   @UseGuards(JwtAuthGuard)
   @ApiResponse({
     description: 'Update Task',

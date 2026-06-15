@@ -1,4 +1,13 @@
-/node_modules
-/dist
-
+node_modules
+dist
+.git
+coverage
+test
 .env
+.env.*
+!.env.example
+*.md
+.husky
+.eslintignore
+.eslintrc.js
+.prettierrc

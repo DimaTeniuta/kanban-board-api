@@ -21,13 +21,16 @@ git clone https://github.com/DimaTeniuta/kanban-board-api.git
 cd kanban-board-api
 cp .env.example .env
 ```
-- Fill all empty variables in `.env` file
+- Set `JWT_SECRET`, `POSTGRES_PASSWORD`, `REDIS_PASSWORD`
+- Update `POSTGRES_URI` and `REDIS_URI` with the same passwords (Docker-internal hosts: `postgres:5432`, `redis:6379`)
 
 3. Start App
 ```bash
-yarn install
-yarn docker:compose:prod / yarn docker:compose:dev
+yarn docker:compose:prod   # production build
+yarn docker:compose:dev   # hot-reload
 ```
+Migrations run automatically on container start.
+
 Your backend will be available at `http://localhost:4000`.
 
 ### API Documentation (Swagger)

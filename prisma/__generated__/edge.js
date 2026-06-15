@@ -166,7 +166,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/home/dimateniuta/projects/kanban/kanban-board-api/prisma/__generated__",
+      "value": "/Users/admin/Desktop/projects/canban/kanban-board-api/prisma/__generated__",
       "fromEnvVar": null
     },
     "config": {
@@ -175,17 +175,16 @@ const config = {
     "binaryTargets": [
       {
         "fromEnvVar": null,
-        "value": "debian-openssl-3.0.x",
+        "value": "darwin-arm64",
         "native": true
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/home/dimateniuta/projects/kanban/kanban-board-api/prisma/schema.prisma",
+    "sourceFilePath": "/Users/admin/Desktop/projects/canban/kanban-board-api/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
-    "rootEnvPath": null,
-    "schemaEnvPath": "../../.env"
+    "rootEnvPath": null
   },
   "relativePath": "..",
   "clientVersion": "6.4.1",
@@ -194,6 +193,7 @@ const config = {
     "db"
   ],
   "activeProvider": "postgresql",
+  "postinstall": true,
   "inlineDatasources": {
     "db": {
       "url": {

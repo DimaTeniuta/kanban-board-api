@@ -5,8 +5,8 @@ import {
   Get,
   HttpStatus,
   Param,
+  Patch,
   Post,
-  Put,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -62,7 +62,7 @@ export class BoardsController {
     return board;
   }
 
-  @Put(':id')
+  @Patch(':id')
   @UseGuards(JwtAuthGuard)
   @ApiResponse({
     description: 'Update Board',
@@ -70,11 +70,11 @@ export class BoardsController {
     type: BoardResult,
   })
   public async update(
-    @Param('id') boatdId: string,
+    @Param('id') boardId: string,
     @Req() req: Request,
     @Body() body: UpdateBoardDto,
   ) {
-    const board = await this.boardsService.update(body, boatdId, req.user.userId);
+    const board = await this.boardsService.update(body, boardId, req.user.userId);
 
     return board;
   }

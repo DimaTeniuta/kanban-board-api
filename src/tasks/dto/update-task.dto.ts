@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { TaskPriority } from '@prisma/__generated__';
-import { IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
 
 export class UpdateTaskDto {
   @ApiProperty({ required: false })
@@ -18,5 +18,8 @@ export class UpdateTaskDto {
 
   @ApiProperty({ enum: TaskPriority, enumName: 'TaskPriority', required: false })
   @IsOptional()
+  @IsEnum(TaskPriority, {
+    message: `priority must be one of: ${Object.values(TaskPriority).join(', ')}`,
+  })
   priority: TaskPriority;
 }
