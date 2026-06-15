@@ -24,7 +24,7 @@ services:
       REDIS_URI: redis://:${REDIS_PASSWORD}@redis:6379
     networks:
       - backend
-    command: yarn start:dev
+    command: npm run start:dev
 
   postgres:
     container_name: postgres

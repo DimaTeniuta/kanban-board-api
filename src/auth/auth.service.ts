@@ -49,11 +49,15 @@ export class AuthService {
     const payload = { sub: user.id, email: user.email };
 
     const accessToken = this.jwtService.sign(payload, {
-      expiresIn: this.configService.getOrThrow<string>('JWT_ACCESS_TOKEN_EXPIRATION_TIME'),
+      expiresIn: this.configService.getOrThrow<string>(
+        'JWT_ACCESS_TOKEN_EXPIRATION_TIME',
+      ) as StringValue,
     });
 
     const refreshToken = this.jwtService.sign(payload, {
-      expiresIn: this.configService.getOrThrow<string>('JWT_REFRESH_TOKEN_EXPIRATION_TIME'),
+      expiresIn: this.configService.getOrThrow<string>(
+        'JWT_REFRESH_TOKEN_EXPIRATION_TIME',
+      ) as StringValue,
     });
 
     await this.redisClient.set(
@@ -87,11 +91,15 @@ export class AuthService {
 
     const payload = { sub: dto.userId };
     const newAccessToken = this.jwtService.sign(payload, {
-      expiresIn: this.configService.getOrThrow<string>('JWT_ACCESS_TOKEN_EXPIRATION_TIME'),
+      expiresIn: this.configService.getOrThrow<string>(
+        'JWT_ACCESS_TOKEN_EXPIRATION_TIME',
+      ) as StringValue,
     });
 
     const newRefreshToken = this.jwtService.sign(payload, {
-      expiresIn: this.configService.getOrThrow<string>('JWT_REFRESH_TOKEN_EXPIRATION_TIME'),
+      expiresIn: this.configService.getOrThrow<string>(
+        'JWT_REFRESH_TOKEN_EXPIRATION_TIME',
+      ) as StringValue,
     });
 
     await this.redisClient.set(

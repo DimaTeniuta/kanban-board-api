@@ -1,5 +1,5 @@
 import { Body, Controller, HttpCode, HttpStatus, Post, Req, UseGuards } from '@nestjs/common';
-import { ApiBody, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiResponse } from '@nestjs/swagger';
 import { Request } from 'express';
 
 import { AuthService } from './auth.service';
@@ -43,6 +43,7 @@ export class AuthController {
   @Post('logout')
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
   @ApiResponse({
     description: 'Logout',
     status: HttpStatus.OK,

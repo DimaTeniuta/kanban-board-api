@@ -11,7 +11,7 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
 import { Request } from 'express';
 
 import { JwtAuthGuard } from '@/auth/guards/jwt.guard';
@@ -23,6 +23,7 @@ import { UpdateColumnOrderDto } from './dto/update-column-order.dto';
 import { ColumnResult, ColumnsResult } from './results/column.result';
 import { DeleteColumnResult } from './results/delete.result';
 
+@ApiBearerAuth('access-token')
 @Controller('boards/:boardId/columns')
 export class ColumnsController {
   constructor(private readonly columnsService: ColumnsService) {}

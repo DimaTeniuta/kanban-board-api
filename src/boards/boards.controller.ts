@@ -10,7 +10,7 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
 import { Request } from 'express';
 
 import { JwtAuthGuard } from '@/auth/guards/jwt.guard';
@@ -21,6 +21,7 @@ import { UpdateBoardDto } from './dto/update-board.dto';
 import { BoardResult, BoardsResult } from './results/board.result';
 import { DeleteBoardResult } from './results/delete.result';
 
+@ApiBearerAuth('access-token')
 @Controller('boards')
 export class BoardsController {
   constructor(private readonly boardsService: BoardsService) {}

@@ -26,8 +26,8 @@ cp .env.example .env
 
 3. Start App
 ```bash
-yarn docker:compose:prod   # production build
-yarn docker:compose:dev   # hot-reload
+npm run docker:compose:prod   # production build
+npm run docker:compose:dev   # hot-reload
 ```
 Migrations run automatically on container start.
 

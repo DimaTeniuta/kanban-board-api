@@ -10,7 +10,7 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
 import { Request } from 'express';
 
 import { JwtAuthGuard } from '@/auth/guards/jwt.guard';
@@ -22,6 +22,7 @@ import { DeleteTaskResult } from './results/delete.result';
 import { TaskResult, TasksResult } from './results/task.result';
 import { TasksService } from './tasks.service';
 
+@ApiBearerAuth('access-token')
 @Controller('boards/:boardId/columns/:columnId/tasks')
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}

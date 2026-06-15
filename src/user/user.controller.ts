@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, HttpStatus, Put, Req, UseGuards } from '@nestjs/common';
-import { ApiBody, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiResponse } from '@nestjs/swagger';
 import { Request } from 'express';
 import { extractUserPassword } from 'utils/extractUserPassword.util';
 
@@ -10,6 +10,7 @@ import { DeleteUserResult } from './results/delete.result';
 import { UserResult } from './results/user.result';
 import { UserService } from './user.service';
 
+@ApiBearerAuth('access-token')
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}

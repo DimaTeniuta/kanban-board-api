@@ -2,15 +2,15 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-COPY package*.json yarn.lock ./
+COPY package*.json package-lock.json .npmrc ./
 
-RUN yarn install --frozen-lockfile
+RUN npm ci
 
 COPY . .
 
 RUN npx prisma generate
 
-RUN yarn build
+RUN npm run build
 
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
@@ -18,4 +18,4 @@ RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 EXPOSE 4000
 
 ENTRYPOINT ["docker-entrypoint.sh"]
-CMD ["yarn", "start:prod"]
+CMD ["npm", "run", "start:prod"]
